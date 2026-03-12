@@ -24,3 +24,7 @@ class NotebookRequest(BaseModel):
         if len(v) == 0:
             raise ValueError("Notebook must contain at least one note")
         return v
+
+
+class PDFRequest(BaseModel):
+    html: str

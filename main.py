@@ -1,6 +1,5 @@
 from prompt import build_prompt
 from model import generate_report
-from pdf_utils import html_to_pdf
 
 
 def synthesize_report(request):
@@ -12,7 +11,7 @@ def synthesize_report(request):
 
     html_report = generate_report(prompt)
 
-    # wrap HTML
+    # wrap HTML so browser/PDF engines render correctly
     full_html = f"""
     <html>
     <head>
@@ -24,10 +23,6 @@ def synthesize_report(request):
     </html>
     """
 
-    # Convert HTML → PDF
-    pdf_path = html_to_pdf(full_html)
-
     return {
-        "html": html_report,
-        "pdf_path": pdf_path
+        "html": full_html
     }

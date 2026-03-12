@@ -1,18 +1,14 @@
-from weasyprint import HTML
-import os
-import uuid
+import pdfkit
 
+# path inside Linux container
+config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
 
-def html_to_pdf(html_content):
+def html_to_pdf(html_content: str):
 
-    # create unique file name
-    pdf_name = f"report_{uuid.uuid4().hex}.pdf"
-    pdf_path = os.path.join("reports", pdf_name)
+    pdf_bytes = pdfkit.from_string(
+        html_content,
+        False,  # return bytes instead of writing file
+        configuration=config
+    )
 
-    # ensure folder exists
-    os.makedirs("reports", exist_ok=True)
-
-    # convert html -> pdf
-    HTML(string=html_content).write_pdf(pdf_path)
-
-    return pdf_path
+    return pdf_bytes

@@ -1,39 +1,33 @@
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
-from validator import NotebookRequest
+from fastapi import FastAPI, Response
+from validator import NotebookRequest, PDFRequest
 from main import synthesize_report
-import os
+from pdf_utils import html_to_pdf
 
 app = FastAPI()
 
 
-@app.get("/")
-def health():
-    return {"status": "Notebook Synthesis API running"}
-
-
 @app.post("/generate_report")
-def synthesize(request: NotebookRequest):
+def generate_report(request: NotebookRequest):
 
     result = synthesize_report(request)
 
-    pdf_path = result["pdf_path"]
-    filename = os.path.basename(pdf_path)
+    html = result["html"]
 
     return {
-        "status": "success",
-        "report_html": result["html"],
-        "pdf_download_url": f"/download/{filename}"
+        "html": html,
+        "pdf_download_url": "/download_pdf"
     }
 
 
-@app.get("/download/{filename}")
-def download_report(filename: str):
+@app.post("/download_pdf")
+def download_pdf(request: PDFRequest):
 
-    file_path = os.path.join("reports", filename)
+    pdf_bytes = html_to_pdf(request.html)
 
-    return FileResponse(
-        path=file_path,
+    return Response(
+        content=pdf_bytes,
         media_type="application/pdf",
-        filename=filename
+        headers={
+            "Content-Disposition": "attachment; filename=report.pdf"
+        }
     )
