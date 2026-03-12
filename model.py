@@ -11,7 +11,7 @@ client = genai.Client(
 MODEL_NAME = os.getenv("GEMINI_MODEL")
 
 
-def generate_markdown(prompt: str):
+def generate_report(prompt: str):
 
     response = client.models.generate_content(
         model=MODEL_NAME,
